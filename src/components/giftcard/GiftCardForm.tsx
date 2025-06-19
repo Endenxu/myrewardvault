@@ -82,12 +82,24 @@ const GiftCardForm: React.FC<GiftCardFormProps> = ({
     [formData.brand],
   );
 
+  const handleBrandSuggestionSelect = useCallback(
+    (brand: string) => {
+      setFormData(prev => ({ ...prev, brand }));
+
+      // Clear brand error when suggestion is selected
+      if (errors.length > 0) {
+        setErrors(prev => prev.filter(error => error.field !== 'brand'));
+      }
+    },
+    [errors],
+  );
+
   const handleDateChange = useCallback(
     (date: Date) => {
       setSelectedDate(date);
       setFormData(prev => ({
         ...prev,
-        expirationDate: date.toISOString().split('T')[0], // YYYY-MM-DD format
+        expirationDate: date.toISOString().split('T')[0],
       }));
 
       // Clear date error
@@ -163,17 +175,20 @@ const GiftCardForm: React.FC<GiftCardFormProps> = ({
       style={styles.container}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      nestedScrollEnabled={true}
     >
       <View style={styles.formContainer}>
         <Input
           label="Brand Name"
-          placeholder="e.g., Amazon, Apple, Starbucks"
+          placeholder="Select or type a brand name"
           value={formData.brand}
           onChangeText={text => handleInputChange('brand', text)}
           onBlur={() => handleInputBlur('brand')}
           error={getFieldError('brand')}
           autoCapitalize="words"
           maxLength={50}
+          showSuggestions={true}
+          onSuggestionSelect={handleBrandSuggestionSelect}
         />
 
         <Input

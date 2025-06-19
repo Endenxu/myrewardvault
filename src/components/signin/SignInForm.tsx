@@ -33,7 +33,6 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSignIn }) => {
     }
 
     setLoading(true);
-    // Simulate API call delay
     setTimeout(() => {
       setLoading(false);
       onSignIn(name.trim());

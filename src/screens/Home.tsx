@@ -120,9 +120,7 @@ const HomeScreen: React.FC = () => {
                 await handleDeleteCard(cardId);
                 Alert.alert('Success', 'Gift card deleted successfully');
                 setShowDetailModal(false);
-              } catch (error) {
-                // Error already handled in handleDeleteCard
-              }
+              } catch (error) {}
             },
           },
         ],
@@ -201,7 +199,7 @@ const HomeScreen: React.FC = () => {
           </View>
 
           <View style={styles.walletCard}>
-            <Text style={styles.totalLabel}>Total Balance</Text>
+            <Text style={styles.totalLabel}>Total Giftcard Balance</Text>
             <Text style={styles.totalAmount}>
               {formatCurrency(totalValue || 0)}
             </Text>
@@ -269,11 +267,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
-    paddingTop: 0,
-    paddingBottom: 10,
-    paddingHorizontal: 0,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
     overflow: 'hidden',
   },
   headerContent: {
@@ -314,8 +309,7 @@ const styles = StyleSheet.create({
   },
   walletCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderRadius: 12,
-    padding: 60,
+    padding: 40,
     alignItems: 'center',
   },
   totalLabel: {

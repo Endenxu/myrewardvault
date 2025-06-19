@@ -1,5 +1,4 @@
 // src/components/giftcard/GiftCardDetails.tsx
-
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -14,6 +13,7 @@ import {
   WarningIcon,
   CheckCircleIcon,
   ClockIcon,
+  SparkleIcon,
 } from '../common/CustomIcons';
 import {
   colors,
@@ -23,6 +23,7 @@ import {
   shadows,
 } from '../../constants/theme';
 import { format, formatDistanceToNow, isPast } from 'date-fns';
+import { getBrandGradient } from '../../constants/brands';
 
 interface GiftCardDetailsProps {
   card: GiftCard;
@@ -88,14 +89,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
   };
 
   const getCardGradient = () => {
-    const brandLower = card.brand.toLowerCase();
-    if (brandLower.includes('amazon')) return ['#FF9900', '#FF7700'];
-    if (brandLower.includes('apple')) return ['#000000', '#333333'];
-    if (brandLower.includes('google')) return ['#4285F4', '#34A853'];
-    if (brandLower.includes('starbucks')) return ['#00704A', '#003D21'];
-    if (brandLower.includes('target')) return ['#CC0000', '#990000'];
-    if (brandLower.includes('walmart')) return ['#004C91', '#0071CE'];
-    return [colors.primary, colors.secondary];
+    return getBrandGradient(card.brand);
   };
 
   const handleDeletePress = () => {
@@ -123,25 +117,54 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
           style={styles.cardGradient}
         >
           <View style={styles.cardContent}>
-            <Text style={styles.cardBrand}>{card.brand}</Text>
-            <Text style={styles.cardAmount}>{formatCurrency(card.amount)}</Text>
-            <View style={styles.cardFooter}>
-              <Text style={styles.cardExpiry}>
-                Expires {format(new Date(card.expirationDate), 'MM/yy')}
+            {/* Card Header */}
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardBrand}>{card.brand}</Text>
+              <View style={styles.cardHeaderIcons}>
+                <SparkleIcon size={20} color="rgba(255, 255, 255, 0.8)" />
+              </View>
+            </View>
+
+            {/* Amount Section */}
+            <View style={styles.cardAmountSection}>
+              <Text style={styles.cardAmount}>
+                {formatCurrency(card.amount)}
               </Text>
               {card.isExpired && (
-                <View style={styles.expiredBadge}>
-                  <Text style={styles.expiredBadgeText}>EXPIRED</Text>
+                <View style={styles.expiredOverlay}>
+                  <View style={styles.expiredBadge}>
+                    <Text style={styles.expiredBadgeText}>EXPIRED</Text>
+                  </View>
                 </View>
               )}
             </View>
+
+            {/* Card Footer */}
+            <View style={styles.cardFooter}>
+              <View style={styles.cardExpirySection}>
+                <Text style={styles.cardExpiry}>
+                  Expires {format(new Date(card.expirationDate), 'MM/yy')}
+                </Text>
+              </View>
+            </View>
           </View>
+
+          <View style={styles.cardOverlay} />
         </LinearGradient>
       </View>
 
-      {/* Card Information */}
+      {/* Card Information  */}
       <View style={styles.infoSection}>
-        <Text style={styles.sectionTitle}>Card Information</Text>
+        <View style={styles.infoHeader}>
+          <Text style={styles.sectionTitle}>Card Information</Text>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={handleDeletePress}
+            activeOpacity={0.7}
+          >
+            <TrashIcon size={18} color={colors.error} />
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.infoRow}>
           <View style={styles.infoIconContainer}>
@@ -202,33 +225,6 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
           </View>
         )}
       </View>
-
-      {/* Action Buttons */}
-      <View style={styles.actionSection}>
-        {/*
-        <TouchableOpacity style={styles.actionButton} onPress={onEdit}>
-          <Icon name="edit" size={20} color={colors.primary} />
-          <Text style={styles.actionButtonText}>Edit Card</Text>
-        </TouchableOpacity>
-
-        {onShare && (
-          <TouchableOpacity style={styles.actionButton} onPress={onShare}>
-            <Icon name="share" size={20} color={colors.primary} />
-            <Text style={styles.actionButtonText}>Share</Text>
-          </TouchableOpacity>
-        )}
-          */}
-
-        <TouchableOpacity
-          style={[styles.actionButton, styles.deleteButton]}
-          onPress={handleDeletePress}
-        >
-          <TrashIcon size={20} color={colors.error} style={styles.actionIcon} />
-          <Text style={[styles.actionButtonText, styles.deleteButtonText]}>
-            Delete Card
-          </Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -238,75 +234,146 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardPreview: {
-    margin: spacing.sm,
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.md,
+    marginBottom: spacing.md,
     borderRadius: borderRadius.xl,
     ...shadows.lg,
   },
   cardGradient: {
     borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    minHeight: 200,
+    minHeight: 220,
+    position: 'relative',
+    overflow: 'hidden',
   },
   cardContent: {
     flex: 1,
+    padding: spacing.xl,
     justifyContent: 'space-between',
+    zIndex: 2,
+  },
+  cardOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    zIndex: 1,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
   },
   cardBrand: {
     fontSize: typography.xl,
     fontWeight: '700',
     color: colors.white,
-    marginBottom: spacing.md,
+    letterSpacing: 0.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  cardHeaderIcons: {
+    opacity: 0.8,
+  },
+  cardAmountSection: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
   },
   cardAmount: {
-    fontSize: typography['4xl'],
+    fontSize: typography['5xl'],
     fontWeight: '800',
     color: colors.white,
     textAlign: 'center',
-    flex: 1,
-    textAlignVertical: 'center',
+    letterSpacing: -1.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
+  },
+  expiredOverlay: {
+    position: 'absolute',
+    top: -spacing.md,
+    right: -spacing.md,
+  },
+  expiredBadge: {
+    backgroundColor: colors.error,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  expiredBadgeText: {
+    fontSize: typography.sm,
+    fontWeight: '700',
+    color: colors.white,
+    letterSpacing: 1,
   },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  cardExpirySection: {
+    flex: 1,
+  },
   cardExpiry: {
-    fontSize: typography.sm,
+    fontSize: typography.base,
     color: colors.white,
     opacity: 0.9,
-  },
-  expiredBadge: {
-    backgroundColor: colors.error,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-  },
-  expiredBadgeText: {
-    fontSize: typography.xs,
-    fontWeight: '600',
-    color: colors.white,
+    fontWeight: '500',
+    letterSpacing: 0.3,
   },
   infoSection: {
     backgroundColor: colors.white,
-    margin: spacing.lg,
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.sm,
+    marginBottom: spacing.lg,
     borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    ...shadows.sm,
+    padding: spacing.xl,
+    ...shadows.md,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
   },
   sectionTitle: {
     fontSize: typography.lg,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: spacing.md,
+    flex: 1,
+  },
+  deleteButton: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.xl,
+    backgroundColor: colors.surfaceVariant,
+    justifyContent: 'center',
+    alignItems: 'center',
+    left: 10,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
   },
   infoIconContainer: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: borderRadius.lg,
     backgroundColor: `${colors.primary}15`,
     justifyContent: 'center',
@@ -315,49 +382,24 @@ const styles = StyleSheet.create({
   },
   infoContent: {
     flex: 1,
+    paddingTop: spacing.xs,
   },
   infoLabel: {
     fontSize: typography.sm,
     color: colors.textSecondary,
     marginBottom: spacing.xs,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   infoValue: {
     fontSize: typography.base,
     fontWeight: '600',
     color: colors.text,
+    lineHeight: typography.base * 1.3,
   },
   expirationStatus: {
     fontSize: typography.sm,
     fontWeight: '500',
     marginTop: spacing.xs,
-  },
-  actionSection: {
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    ...shadows.sm,
-  },
-  actionIcon: {
-    marginRight: spacing.md,
-  },
-  actionButtonText: {
-    fontSize: typography.base,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  deleteButton: {
-    borderWidth: 1,
-    borderColor: `${colors.error}30`,
-  },
-  deleteButtonText: {
-    color: colors.error,
   },
 });
 

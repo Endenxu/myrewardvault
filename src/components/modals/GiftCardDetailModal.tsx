@@ -1,4 +1,5 @@
-// src/components/modals/GiftCardDetailModal.tsx - Clean Header Design
+// src/components/modals/GiftCardDetailModal.tsx
+
 import React, { useState } from 'react';
 import {
   Modal,
@@ -13,7 +14,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon, ShareIcon } from '../common/CustomIcons';
 import GiftCardDetails from '../giftcard/GiftCardDetails';
-import EditGiftCardModal from './EditGiftCardModal';
 import { GiftCard } from '../../types';
 import {
   colors,
@@ -90,7 +90,7 @@ const GiftCardDetailModal: React.FC<GiftCardDetailModalProps> = ({
         onRequestClose={onClose}
       >
         <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-          {/* Clean Header Design */}
+          {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerContent}>
               <TouchableOpacity onPress={onClose} style={styles.backButton}>
@@ -126,14 +126,6 @@ const GiftCardDetailModal: React.FC<GiftCardDetailModalProps> = ({
           </ScrollView>
         </SafeAreaView>
       </Modal>
-
-      {/* Edit Modal */}
-      <EditGiftCardModal
-        visible={showEditModal}
-        card={card}
-        onClose={() => setShowEditModal(false)}
-        onSuccess={handleEditSuccess}
-      />
     </>
   );
 };
@@ -161,11 +153,9 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: borderRadius.xl,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceVariant,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   headerCenter: {
     flex: 1,
@@ -188,11 +178,9 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: borderRadius.xl,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceVariant,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   content: {
     flex: 1,

@@ -1,5 +1,5 @@
-// src/components/modals/AddGiftCardModal.tsx - Clean Header Design
-import React from 'react';
+// src/components/modals/AddGiftCardModal.tsx
+
 import {
   Modal,
   View,
@@ -60,7 +60,7 @@ const AddGiftCardModal: React.FC<AddGiftCardModalProps> = ({
           </View>
         </View>
 
-        {/* Content with proper keyboard handling */}
+        {/* keyboard handling */}
         <KeyboardAvoidingView
           style={styles.content}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

@@ -19,6 +19,7 @@ import {
   shadows,
 } from '../../constants/theme';
 import { format } from 'date-fns';
+import { getBrandGradient } from '../../constants/brands';
 
 interface GiftCardItemProps {
   card: GiftCard;
@@ -43,14 +44,7 @@ const GiftCardItem: React.FC<GiftCardItemProps> = ({
   };
 
   const getCardGradient = () => {
-    const brandLower = card.brand.toLowerCase();
-    if (brandLower.includes('amazon')) return ['#FF9900', '#FF7700'];
-    if (brandLower.includes('apple')) return ['#000000', '#333333'];
-    if (brandLower.includes('google')) return ['#4285F4', '#34A853'];
-    if (brandLower.includes('starbucks')) return ['#00704A', '#003D21'];
-    if (brandLower.includes('target')) return ['#CC0000', '#990000'];
-    if (brandLower.includes('walmart')) return ['#004C91', '#0071CE'];
-    return ['#6366F1', '#8B5CF6'];
+    return getBrandGradient(card.brand);
   };
 
   const formatCurrency = (amount: number) => {

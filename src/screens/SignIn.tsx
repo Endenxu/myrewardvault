@@ -1,4 +1,5 @@
-// src/screens/SignIn.tsx - Improved Keyboard Avoiding
+// src/screens/SignIn.tsx
+
 import React from 'react';
 import {
   View,
@@ -68,7 +69,6 @@ const SignInScreen: React.FC = () => {
                 keyboardShouldPersistTaps="handled"
               >
                 <View style={styles.container}>
-                  {/* Top spacer for better centering */}
                   <View style={styles.topSpacer} />
 
                   {/* Header Section */}

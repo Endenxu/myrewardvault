@@ -53,7 +53,7 @@ export interface StorageKeys {
   USER_NAME: string;
 }
 
-// API Response types (Maybe?)
+// API Response types
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;

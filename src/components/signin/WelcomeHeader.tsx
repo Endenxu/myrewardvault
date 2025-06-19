@@ -99,7 +99,6 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ title, subtitle }) => {
         >
           <WalletIcon size={48} />
 
-          {/* Floating elements for added visual interest */}
           <View style={styles.floatingDot1} />
           <View style={styles.floatingDot2} />
           <View style={styles.floatingDot3} />

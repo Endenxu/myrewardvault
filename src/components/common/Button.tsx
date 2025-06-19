@@ -296,9 +296,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 0,
   },
-  loader: {
-    // No additional styles needed
-  },
+  loader: {},
 });
 
 export default Button;

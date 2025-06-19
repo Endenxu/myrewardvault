@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import DatePicker from 'react-native-date-picker';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { CalendarIcon, ChevronRightIcon } from './CustomIcons';
 import {
   colors,
   typography,
@@ -27,7 +27,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
   value,
   onDateChange,
   error,
-  placeholder = 'Select date',
+  placeholder = 'Select expiration date',
   minimumDate,
   maximumDate,
 }) => {
@@ -44,7 +44,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
 
   const formatDisplayDate = (date: Date | undefined) => {
     if (!date) return placeholder;
-    return format(date, 'MMM dd, yyyy');
+    return format(date, 'EEEE, MMMM dd, yyyy');
   };
 
   return (
@@ -54,19 +54,20 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
       <TouchableOpacity
         onPress={() => setIsOpen(true)}
         style={[styles.inputContainer, error && styles.inputError]}
+        activeOpacity={0.7}
       >
         <View style={styles.contentContainer}>
-          <Icon
-            name="calendar-today"
-            size={20}
-            color={value ? colors.primary : colors.textTertiary}
-            style={styles.icon}
-          />
+          <View style={styles.iconContainer}>
+            <CalendarIcon
+              size={20}
+              color={value ? colors.primary : colors.textSecondary}
+            />
+          </View>
           <Text style={[styles.dateText, !value && styles.placeholderText]}>
             {formatDisplayDate(value)}
           </Text>
         </View>
-        <Icon name="chevron-right" size={20} color={colors.textTertiary} />
+        <ChevronRightIcon size={16} color={colors.textSecondary} />
       </TouchableOpacity>
 
       {error && <Text style={styles.errorText}>{error}</Text>}
@@ -91,13 +92,13 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
   },
   label: {
-    fontSize: typography.sm,
+    fontSize: typography.base,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -108,32 +109,38 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: borderRadius.lg,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md + 2, // Match Input component height
-    minHeight: 52,
+    paddingVertical: spacing.md,
+    minHeight: 56,
   },
   inputError: {
     borderColor: colors.error,
+    backgroundColor: `${colors.error}05`,
   },
   contentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
   },
-  icon: {
+  iconContainer: {
     marginRight: spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   dateText: {
     fontSize: typography.base,
     color: colors.text,
+    fontWeight: '500',
     flex: 1,
   },
   placeholderText: {
-    color: colors.textTertiary,
+    color: colors.textSecondary,
+    fontWeight: '400',
   },
   errorText: {
     fontSize: typography.sm,
     color: colors.error,
     marginTop: spacing.xs,
+    marginLeft: spacing.xs,
   },
 });
 

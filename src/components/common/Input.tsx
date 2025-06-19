@@ -8,19 +8,25 @@ import {
   StyleSheet,
   TextInputProps,
   Animated,
+  TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import {
   colors,
   typography,
   spacing,
   borderRadius,
+  shadows,
 } from '../../constants/theme';
+import { getPopularBrands, searchBrands } from '../../constants/brands';
 
 interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  showSuggestions?: boolean;
+  onSuggestionSelect?: (suggestion: string) => void;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -31,10 +37,16 @@ const Input: React.FC<InputProps> = ({
   style,
   onFocus,
   onBlur,
+  onChangeText,
+  value,
+  showSuggestions = false,
+  onSuggestionSelect,
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [animatedValue] = useState(new Animated.Value(0));
+  const [showSuggestionsList, setShowSuggestionsList] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
 
   const handleFocus = (event: any) => {
     setIsFocused(true);
@@ -43,6 +55,12 @@ const Input: React.FC<InputProps> = ({
       duration: 200,
       useNativeDriver: false,
     }).start();
+
+    if (showSuggestions) {
+      setShowSuggestionsList(true);
+      updateSuggestions(value || '');
+    }
+
     onFocus?.(event);
   };
 
@@ -53,7 +71,36 @@ const Input: React.FC<InputProps> = ({
       duration: 200,
       useNativeDriver: false,
     }).start();
+
+    setTimeout(() => {
+      setShowSuggestionsList(false);
+    }, 150);
+
     onBlur?.(event);
+  };
+
+  const updateSuggestions = (text: string) => {
+    if (!text.trim()) {
+      // Show popular brands when empty
+      setFilteredSuggestions(getPopularBrands());
+      return;
+    }
+
+    // Use the search function from brands config
+    const matchingBrands = searchBrands(text);
+    setFilteredSuggestions(matchingBrands.map(brand => brand.name));
+  };
+
+  const handleChangeText = (text: string) => {
+    if (showSuggestions) {
+      updateSuggestions(text);
+    }
+    onChangeText?.(text);
+  };
+
+  const handleSuggestionPress = (suggestion: string) => {
+    onSuggestionSelect?.(suggestion);
+    setShowSuggestionsList(false);
   };
 
   const borderColor = animatedValue.interpolate({
@@ -94,11 +141,43 @@ const Input: React.FC<InputProps> = ({
           placeholderTextColor={colors.textTertiary}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          onChangeText={handleChangeText}
+          value={value}
           {...props}
         />
         {rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}
       </Animated.View>
+
       {error && <Text style={styles.errorText}>{error}</Text>}
+
+      {/* Scrollable Suggestions List */}
+      {showSuggestions &&
+        showSuggestionsList &&
+        filteredSuggestions.length > 0 && (
+          <View style={styles.suggestionsContainer}>
+            <ScrollView
+              style={styles.suggestionsScrollView}
+              showsVerticalScrollIndicator={false}
+              nestedScrollEnabled={true}
+              keyboardShouldPersistTaps="handled"
+            >
+              {filteredSuggestions.map((item, index) => (
+                <TouchableOpacity
+                  key={item}
+                  style={[
+                    styles.suggestionItem,
+                    index === filteredSuggestions.length - 1 &&
+                      styles.lastSuggestionItem,
+                  ]}
+                  onPress={() => handleSuggestionPress(item)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.suggestionText}>{item}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
     </View>
   );
 };
@@ -106,6 +185,7 @@ const Input: React.FC<InputProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.md,
+    position: 'relative',
   },
   label: {
     fontSize: typography.base,
@@ -150,6 +230,37 @@ const styles = StyleSheet.create({
     color: colors.error,
     marginTop: spacing.sm,
     marginLeft: spacing.sm,
+    fontWeight: '500',
+  },
+  suggestionsContainer: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.lg,
+    marginTop: spacing.xs,
+    maxHeight: 240,
+    zIndex: 1000,
+    ...shadows.md,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+  },
+  suggestionsScrollView: {
+    maxHeight: 240,
+  },
+  suggestionItem: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderLight,
+  },
+  lastSuggestionItem: {
+    borderBottomWidth: 0,
+  },
+  suggestionText: {
+    fontSize: typography.base,
+    color: colors.text,
     fontWeight: '500',
   },
 });
