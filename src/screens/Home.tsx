@@ -3,23 +3,25 @@
 import React, { useState, useCallback } from 'react';
 import {
   View,
+  Text,
   FlatList,
   StyleSheet,
   RefreshControl,
   Alert,
   StatusBar,
+  TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
 import { useGiftCards } from '../hooks/useGiftCards';
 import { storageService } from '../services/storageService';
-import HomeHeader from '../components/home/HomeHeader';
 import GiftCardItem from '../components/giftcard/GiftCardItem';
 import EmptyState from '../components/common/EmptyState';
 import FloatingActionButton from '../components/common/FloatingActionButton';
 import AddGiftCardModal from '../components/modals/AddGiftCardModal';
 import GiftCardDetailModal from '../components/modals/GiftCardDetailModal';
+import { SearchIcon, FilterIcon } from '../components/common/CustomIcons';
 import { GiftCard } from '../types';
-import { colors, spacing } from '../constants/theme';
+import { colors } from '../constants/theme';
 
 const HomeScreen: React.FC = () => {
   const {
@@ -41,7 +43,6 @@ const HomeScreen: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
 
-  // Load user name on mount
   React.useEffect(() => {
     const loadUserName = async () => {
       try {
@@ -53,6 +54,20 @@ const HomeScreen: React.FC = () => {
     };
     loadUserName();
   }, []);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -76,7 +91,6 @@ const HomeScreen: React.FC = () => {
       try {
         const success = await deleteCard(cardId);
         if (success) {
-          // Don't show alert here, the delete confirmation already handles feedback
           return success;
         }
         throw new Error('Delete failed');
@@ -105,6 +119,7 @@ const HomeScreen: React.FC = () => {
               try {
                 await handleDeleteCard(cardId);
                 Alert.alert('Success', 'Gift card deleted successfully');
+                setShowDetailModal(false);
               } catch (error) {
                 // Error already handled in handleDeleteCard
               }
@@ -120,9 +135,7 @@ const HomeScreen: React.FC = () => {
     setShowAddModal(true);
   }, []);
 
-  const handleAddCardSuccess = useCallback(() => {
-    // Modal will close automatically, and the list will refresh via Redux
-  }, []);
+  const handleAddCardSuccess = useCallback(() => {}, []);
 
   const handleCloseAddModal = useCallback(() => {
     setShowAddModal(false);
@@ -130,16 +143,14 @@ const HomeScreen: React.FC = () => {
 
   const handleCloseDetailModal = useCallback(() => {
     setShowDetailModal(false);
-    selectCard(null); // Clear selected card
+    selectCard(null);
   }, [selectCard]);
 
   const handleDetailModalUpdate = useCallback(() => {
-    // Refresh cards list after update
     refreshCards();
   }, [refreshCards]);
 
   const handleSearch = useCallback(() => {
-    // TODO: Implement search functionality
     Alert.alert('Search', 'Search functionality coming soon!');
   }, []);
 
@@ -166,67 +177,74 @@ const HomeScreen: React.FC = () => {
 
   const keyExtractor = useCallback((item: GiftCard) => item.id, []);
 
-  const renderEmptyState = () => (
-    <EmptyState
-      icon="credit-card"
-      title="No Gift Cards Yet"
-      subtitle="Start building your digital wallet by adding your first gift card"
-      buttonText="Add Your First Card"
-      onButtonPress={handleAddCard}
-    />
-  );
-
-  const renderContent = () => {
-    if (cardCount === 0) {
-      return renderEmptyState();
-    }
-
-    return (
-      <FlatList
-        data={cards}
-        renderItem={renderGiftCard}
-        keyExtractor={keyExtractor}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={[colors.primary]}
-            tintColor={colors.primary}
-          />
-        }
-        initialNumToRender={10}
-        maxToRenderPerBatch={10}
-        windowSize={10}
-        removeClippedSubviews={true}
-        getItemLayout={(data, index) => ({
-          length: 160, // Approximate item height
-          offset: 160 * index,
-          index,
-        })}
-      />
-    );
-  };
-
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" translucent={false} />
 
-      <HomeHeader
-        userName={userName}
-        totalValue={totalValue}
-        cardCount={cardCount}
-        expiredCount={expiredCount}
-        onSearchPress={handleSearch}
-        onSortPress={handleSort}
-      />
+      {/* Header */}
+      <LinearGradient colors={['#6366F1', '#8B5CF6']} style={styles.header}>
+        <View style={styles.headerContent}>
+          <View style={styles.greetingRow}>
+            <View style={styles.greeting}>
+              <Text style={styles.greetingText}>{getGreeting()}</Text>
+              <Text style={styles.nameText}>{userName || 'Hugh'}!</Text>
+            </View>
 
-      <View style={styles.content}>{renderContent()}</View>
+            <View style={styles.actions}>
+              <TouchableOpacity onPress={handleSearch} style={styles.actionBtn}>
+                <SearchIcon size={20} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleSort} style={styles.actionBtn}>
+                <FilterIcon size={20} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
 
-      {cardCount > 0 && (
-        <FloatingActionButton onPress={handleAddCard} icon="add" />
-      )}
+          <View style={styles.walletCard}>
+            <Text style={styles.totalLabel}>Total Balance</Text>
+            <Text style={styles.totalAmount}>
+              {formatCurrency(totalValue || 0)}
+            </Text>
+            <Text style={styles.cardInfo}>
+              {cardCount} {cardCount === 1 ? 'Card' : 'Cards'}
+              {expiredCount > 0 && ` • ${expiredCount} Expired`}
+            </Text>
+          </View>
+        </View>
+      </LinearGradient>
+
+      {/* Content */}
+      <View style={styles.content}>
+        {cardCount === 0 ? (
+          <View style={styles.emptyContainer}>
+            <EmptyState
+              icon="credit-card"
+              title="No Gift Cards Yet"
+              subtitle="Start building your digital wallet by adding your first gift card"
+              buttonText="Add Your First Card"
+              onButtonPress={handleAddCard}
+            />
+          </View>
+        ) : (
+          <FlatList
+            data={cards}
+            renderItem={renderGiftCard}
+            keyExtractor={keyExtractor}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.list}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                colors={['#6366F1']}
+                tintColor="#6366F1"
+              />
+            }
+          />
+        )}
+      </View>
+
+      <FloatingActionButton onPress={handleAddCard} icon="add" size={56} />
 
       <AddGiftCardModal
         visible={showAddModal}
@@ -241,7 +259,7 @@ const HomeScreen: React.FC = () => {
         onDelete={handleDetailModalDelete}
         onUpdate={handleDetailModalUpdate}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -250,13 +268,84 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  header: {
+    paddingTop: 0,
+    paddingBottom: 10,
+    paddingHorizontal: 0,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    overflow: 'hidden',
+  },
+  headerContent: {
+    paddingTop: 60,
+    gap: 10,
+  },
+  greetingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingHorizontal: 30,
+  },
+  greeting: {
+    flex: 1,
+  },
+  greetingText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  nameText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  actionBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  walletCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 12,
+    padding: 60,
+    alignItems: 'center',
+  },
+  totalLabel: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  totalAmount: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 8,
+  },
+  cardInfo: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: '500',
+  },
   content: {
     flex: 1,
-    backgroundColor: colors.background,
   },
-  listContainer: {
-    paddingTop: spacing.md,
-    paddingBottom: spacing['4xl'],
+  list: {
+    paddingBottom: 100,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
   },
 });
 

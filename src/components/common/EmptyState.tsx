@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { CreditCardIcon, PlusIcon } from './CustomIcons';
 import Button from './Button';
 import {
   colors,
@@ -12,7 +12,7 @@ import {
 } from '../../constants/theme';
 
 interface EmptyStateProps {
-  icon?: string;
+  icon?: 'credit-card' | 'user' | 'settings';
   title: string;
   subtitle: string;
   buttonText?: string;
@@ -26,11 +26,17 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   buttonText,
   onButtonPress,
 }) => {
+  const getIconComponent = () => {
+    switch (icon) {
+      case 'credit-card':
+      default:
+        return <CreditCardIcon size={64} color={colors.textTertiary} />;
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Icon name={icon} size={80} color={colors.textTertiary} />
-      </View>
+      <View style={styles.iconContainer}>{getIconComponent()}</View>
 
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
@@ -39,7 +45,9 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         <Button
           title={buttonText}
           onPress={onButtonPress}
+          size="large"
           style={styles.button}
+          leftIcon={<PlusIcon size={20} color={colors.white} />}
         />
       )}
     </View>
@@ -48,20 +56,22 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing['2xl'],
   },
   iconContainer: {
     width: 120,
     height: 120,
+    borderRadius: 60,
     backgroundColor: colors.surface,
-    borderRadius: borderRadius.full,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.xl,
+    borderWidth: 2,
+    borderColor: colors.borderLight,
+    borderStyle: 'dashed',
   },
   title: {
     fontSize: typography['2xl'],
@@ -74,8 +84,9 @@ const styles = StyleSheet.create({
     fontSize: typography.base,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: typography.lineHeight.relaxed * typography.base,
+    lineHeight: typography.base * 1.5,
     marginBottom: spacing.xl,
+    maxWidth: 280,
   },
   button: {
     minWidth: 200,

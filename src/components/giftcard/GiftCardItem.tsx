@@ -2,8 +2,14 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
+import {
+  TrashIcon,
+  ClockIcon,
+  ChevronRightIcon,
+  AlertCircleIcon,
+  CalendarIcon,
+} from '../common/CustomIcons';
 import { GiftCard } from '../../types';
 import {
   colors,
@@ -37,7 +43,6 @@ const GiftCardItem: React.FC<GiftCardItemProps> = ({
   };
 
   const getCardGradient = () => {
-    // Simple gradient selection based on brand name
     const brandLower = card.brand.toLowerCase();
     if (brandLower.includes('amazon')) return ['#FF9900', '#FF7700'];
     if (brandLower.includes('apple')) return ['#000000', '#333333'];
@@ -45,9 +50,7 @@ const GiftCardItem: React.FC<GiftCardItemProps> = ({
     if (brandLower.includes('starbucks')) return ['#00704A', '#003D21'];
     if (brandLower.includes('target')) return ['#CC0000', '#990000'];
     if (brandLower.includes('walmart')) return ['#004C91', '#0071CE'];
-
-    // Default gradient
-    return [colors.primary, colors.secondary];
+    return ['#6366F1', '#8B5CF6'];
   };
 
   const formatCurrency = (amount: number) => {
@@ -71,19 +74,32 @@ const GiftCardItem: React.FC<GiftCardItemProps> = ({
 
   const getExpirationStatus = () => {
     if (card.isExpired) {
-      return { text: 'Expired', color: colors.error };
+      return {
+        text: 'Expired',
+        color: '#FF6B6B',
+        IconComponent: AlertCircleIcon,
+      };
     }
 
     const daysLeft = getDaysUntilExpiration();
     if (daysLeft <= 7) {
-      return { text: `${daysLeft} days left`, color: colors.warning };
+      return {
+        text: `${daysLeft} days left`,
+        color: '#FFB84D',
+        IconComponent: ClockIcon,
+      };
     } else if (daysLeft <= 30) {
-      return { text: `${daysLeft} days left`, color: colors.warning };
+      return {
+        text: `${daysLeft} days left`,
+        color: '#FFB84D',
+        IconComponent: ClockIcon,
+      };
     }
 
     return {
       text: formatDate(card.expirationDate),
-      color: colors.textSecondary,
+      color: 'rgba(255, 255, 255, 0.8)',
+      IconComponent: CalendarIcon,
     };
   };
 
@@ -93,7 +109,7 @@ const GiftCardItem: React.FC<GiftCardItemProps> = ({
     <TouchableOpacity
       onPress={onPress}
       style={styles.container}
-      activeOpacity={0.8}
+      activeOpacity={0.85}
     >
       <LinearGradient
         colors={getCardGradient()}
@@ -102,7 +118,7 @@ const GiftCardItem: React.FC<GiftCardItemProps> = ({
         style={styles.gradient}
       >
         <View style={styles.cardContent}>
-          {/* Header */}
+          {/* Header with better alignment */}
           <View style={styles.header}>
             <View style={styles.brandContainer}>
               <Text style={styles.brandText} numberOfLines={1}>
@@ -118,20 +134,24 @@ const GiftCardItem: React.FC<GiftCardItemProps> = ({
             <TouchableOpacity
               onPress={handleDeletePress}
               style={styles.deleteButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Icon name="delete" size={20} color={colors.white} />
+              <TrashIcon size={18} color={colors.white} />
             </TouchableOpacity>
           </View>
 
-          {/* Amount */}
+          {/* Amount with better spacing */}
           <View style={styles.amountContainer}>
             <Text style={styles.amountText}>{formatCurrency(card.amount)}</Text>
           </View>
 
-          {/* Footer */}
+          {/* Footer with proper alignment */}
           <View style={styles.footer}>
             <View style={styles.expirationContainer}>
-              <Icon name="schedule" size={16} color={colors.white} />
+              <expirationStatus.IconComponent
+                size={14}
+                color={expirationStatus.color}
+              />
               <Text
                 style={[
                   styles.expirationText,
@@ -142,7 +162,7 @@ const GiftCardItem: React.FC<GiftCardItemProps> = ({
               </Text>
             </View>
 
-            <Icon name="chevron-right" size={20} color={colors.white} />
+            <ChevronRightIcon size={20} color="rgba(255, 255, 255, 0.8)" />
           </View>
         </View>
       </LinearGradient>
@@ -152,10 +172,15 @@ const GiftCardItem: React.FC<GiftCardItemProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: spacing.md,
-    marginVertical: spacing.xs,
+    marginHorizontal: spacing.lg,
+    marginVertical: spacing.sm,
     borderRadius: borderRadius.xl,
     ...shadows.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
   },
   gradient: {
     borderRadius: borderRadius.xl,
@@ -163,66 +188,80 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: spacing.lg,
-    minHeight: 140,
+    minHeight: 160,
+    justifyContent: 'space-between',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: spacing.md,
+    minHeight: 32,
   },
   brandContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    paddingRight: spacing.sm,
   },
   brandText: {
     fontSize: typography.lg,
     fontWeight: '700',
     color: colors.white,
     flex: 1,
+    lineHeight: typography.lg * 1.2,
   },
   expiredBadge: {
-    backgroundColor: colors.error,
+    backgroundColor: 'rgba(255, 107, 107, 0.9)',
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: 4,
     borderRadius: borderRadius.sm,
     marginLeft: spacing.sm,
   },
   expiredText: {
     fontSize: typography.xs,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.white,
   },
   deleteButton: {
-    padding: spacing.xs,
-    borderRadius: borderRadius.sm,
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 36,
+    minHeight: 36,
   },
   amountContainer: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: spacing.md,
   },
   amountText: {
     fontSize: typography['3xl'],
     fontWeight: '800',
     color: colors.white,
     textAlign: 'center',
+    lineHeight: typography['3xl'] * 1.1,
+    letterSpacing: -0.5,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    minHeight: 24,
   },
   expirationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   expirationText: {
     fontSize: typography.sm,
-    fontWeight: '500',
-    marginLeft: spacing.xs,
+    fontWeight: '600',
     color: colors.white,
+    marginLeft: spacing.xs,
   },
 });
 

@@ -1,5 +1,4 @@
-// src/components/modals/AddGiftCardModal.tsx
-
+// src/components/modals/AddGiftCardModal.tsx - Clean Header Design
 import React from 'react';
 import {
   Modal,
@@ -11,8 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import LinearGradient from 'react-native-linear-gradient';
+import { CreditCardIcon, CloseIcon } from '../common/CustomIcons';
 import GiftCardForm from '../giftcard/GiftCardForm';
 import {
   colors,
@@ -45,33 +43,28 @@ const AddGiftCardModal: React.FC<AddGiftCardModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <SafeAreaView style={styles.container}>
-        {/* Header */}
-        <LinearGradient
-          colors={[colors.primary, colors.secondary]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.header}
-        >
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        {/* Clean Header Design */}
+        <View style={styles.header}>
           <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
               <View style={styles.iconContainer}>
-                <Icon name="add-card" size={24} color={colors.white} />
+                <CreditCardIcon size={24} color={colors.primary} />
               </View>
               <Text style={styles.headerTitle}>Add Gift Card</Text>
             </View>
 
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Icon name="close" size={24} color={colors.white} />
+              <CloseIcon size={18} color={colors.text} />
             </TouchableOpacity>
           </View>
-        </LinearGradient>
+        </View>
 
-        {/* Content */}
+        {/* Content with proper keyboard handling */}
         <KeyboardAvoidingView
           style={styles.content}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+          keyboardVerticalOffset={0}
         >
           <View style={styles.formWrapper}>
             <GiftCardForm onSuccess={handleSuccess} onCancel={onClose} />
@@ -88,14 +81,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
+    backgroundColor: colors.surface,
     paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
     ...shadows.sm,
   },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    minHeight: 44,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -103,10 +100,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.xl,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.md,
@@ -114,13 +110,13 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: typography.xl,
     fontWeight: '700',
-    color: colors.white,
+    color: colors.text,
   },
   closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.xl,
+    backgroundColor: colors.surfaceVariant,
     justifyContent: 'center',
     alignItems: 'center',
   },

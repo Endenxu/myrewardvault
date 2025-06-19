@@ -2,9 +2,19 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import { GiftCard } from '../../types';
+import {
+  TagIcon,
+  DollarSignIcon,
+  CalendarXIcon,
+  PlusCircleIcon,
+  EditIcon,
+  TrashIcon,
+  WarningIcon,
+  CheckCircleIcon,
+  ClockIcon,
+} from '../common/CustomIcons';
 import {
   colors,
   typography,
@@ -47,7 +57,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
       return {
         text: `Expired ${timeAgo}`,
         color: colors.error,
-        icon: 'error',
+        icon: WarningIcon,
       };
     }
 
@@ -60,20 +70,20 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
       return {
         text: `Expires ${timeUntil}`,
         color: colors.error,
-        icon: 'warning',
+        icon: WarningIcon,
       };
     } else if (daysUntil <= 30) {
       return {
         text: `Expires ${timeUntil}`,
         color: colors.warning,
-        icon: 'schedule',
+        icon: ClockIcon,
       };
     }
 
     return {
       text: `Expires ${timeUntil}`,
       color: colors.success,
-      icon: 'check-circle',
+      icon: CheckCircleIcon,
     };
   };
 
@@ -100,6 +110,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
   };
 
   const expirationInfo = getExpirationInfo();
+  const ExpirationIcon = expirationInfo.icon;
 
   return (
     <View style={styles.container}>
@@ -134,7 +145,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
 
         <View style={styles.infoRow}>
           <View style={styles.infoIconContainer}>
-            <Icon name="store" size={20} color={colors.primary} />
+            <TagIcon size={20} color={colors.primary} />
           </View>
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Brand</Text>
@@ -144,7 +155,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
 
         <View style={styles.infoRow}>
           <View style={styles.infoIconContainer}>
-            <Icon name="attach-money" size={20} color={colors.primary} />
+            <DollarSignIcon size={20} color={colors.primary} />
           </View>
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Amount</Text>
@@ -153,17 +164,8 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
         </View>
 
         <View style={styles.infoRow}>
-          <View
-            style={[
-              styles.infoIconContainer,
-              { backgroundColor: `${expirationInfo.color}15` },
-            ]}
-          >
-            <Icon
-              name={expirationInfo.icon}
-              size={20}
-              color={expirationInfo.color}
-            />
+          <View style={styles.infoIconContainer}>
+            <ExpirationIcon size={20} color={colors.primary} />
           </View>
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Expiration</Text>
@@ -180,7 +182,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
 
         <View style={styles.infoRow}>
           <View style={styles.infoIconContainer}>
-            <Icon name="date-range" size={20} color={colors.primary} />
+            <PlusCircleIcon size={20} color={colors.primary} />
           </View>
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Added</Text>
@@ -191,7 +193,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
         {card.updatedAt !== card.createdAt && (
           <View style={styles.infoRow}>
             <View style={styles.infoIconContainer}>
-              <Icon name="edit" size={20} color={colors.primary} />
+              <EditIcon size={20} color={colors.primary} />
             </View>
             <View style={styles.infoContent}>
               <Text style={styles.infoLabel}>Last Updated</Text>
@@ -203,6 +205,7 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
 
       {/* Action Buttons */}
       <View style={styles.actionSection}>
+        {/*
         <TouchableOpacity style={styles.actionButton} onPress={onEdit}>
           <Icon name="edit" size={20} color={colors.primary} />
           <Text style={styles.actionButtonText}>Edit Card</Text>
@@ -214,12 +217,13 @@ const GiftCardDetails: React.FC<GiftCardDetailsProps> = ({
             <Text style={styles.actionButtonText}>Share</Text>
           </TouchableOpacity>
         )}
+          */}
 
         <TouchableOpacity
           style={[styles.actionButton, styles.deleteButton]}
           onPress={handleDeletePress}
         >
-          <Icon name="delete" size={20} color={colors.error} />
+          <TrashIcon size={20} color={colors.error} style={styles.actionIcon} />
           <Text style={[styles.actionButtonText, styles.deleteButtonText]}>
             Delete Card
           </Text>
@@ -234,14 +238,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardPreview: {
-    margin: spacing.lg,
+    margin: spacing.sm,
     borderRadius: borderRadius.xl,
     ...shadows.lg,
   },
   cardGradient: {
     borderRadius: borderRadius.xl,
     padding: spacing.lg,
-    minHeight: 180,
+    minHeight: 200,
   },
   cardContent: {
     flex: 1,
@@ -284,7 +288,7 @@ const styles = StyleSheet.create({
   },
   infoSection: {
     backgroundColor: colors.white,
-    margin: spacing.md,
+    margin: spacing.lg,
     borderRadius: borderRadius.xl,
     padding: spacing.lg,
     ...shadows.sm,
@@ -293,12 +297,12 @@ const styles = StyleSheet.create({
     fontSize: typography.lg,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   infoIconContainer: {
     width: 40,
@@ -316,6 +320,7 @@ const styles = StyleSheet.create({
     fontSize: typography.sm,
     color: colors.textSecondary,
     marginBottom: spacing.xs,
+    fontWeight: '600',
   },
   infoValue: {
     fontSize: typography.base,
@@ -339,11 +344,13 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     ...shadows.sm,
   },
+  actionIcon: {
+    marginRight: spacing.md,
+  },
   actionButtonText: {
     fontSize: typography.base,
     fontWeight: '600',
     color: colors.primary,
-    marginLeft: spacing.md,
   },
   deleteButton: {
     borderWidth: 1,

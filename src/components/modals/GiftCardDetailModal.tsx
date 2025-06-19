@@ -1,5 +1,4 @@
-// src/components/modals/GiftCardDetailModal.tsx
-
+// src/components/modals/GiftCardDetailModal.tsx - Clean Header Design
 import React, { useState } from 'react';
 import {
   Modal,
@@ -12,8 +11,7 @@ import {
   Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import LinearGradient from 'react-native-linear-gradient';
+import { ArrowLeftIcon, ShareIcon } from '../common/CustomIcons';
 import GiftCardDetails from '../giftcard/GiftCardDetails';
 import EditGiftCardModal from './EditGiftCardModal';
 import { GiftCard } from '../../types';
@@ -57,7 +55,7 @@ const GiftCardDetailModal: React.FC<GiftCardDetailModalProps> = ({
 
     try {
       await onDelete(card.id);
-      onClose(); // Close the detail modal after deletion
+      onClose();
     } catch (error) {
       Alert.alert('Error', 'Failed to delete gift card');
     }
@@ -91,17 +89,12 @@ const GiftCardDetailModal: React.FC<GiftCardDetailModalProps> = ({
         presentationStyle="pageSheet"
         onRequestClose={onClose}
       >
-        <SafeAreaView style={styles.container}>
-          {/* Header */}
-          <LinearGradient
-            colors={[colors.primary, colors.secondary]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.header}
-          >
+        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+          {/* Clean Header Design */}
+          <View style={styles.header}>
             <View style={styles.headerContent}>
               <TouchableOpacity onPress={onClose} style={styles.backButton}>
-                <Icon name="arrow-back" size={24} color={colors.white} />
+                <ArrowLeftIcon size={20} color={colors.textSecondary} />
               </TouchableOpacity>
 
               <View style={styles.headerCenter}>
@@ -113,10 +106,10 @@ const GiftCardDetailModal: React.FC<GiftCardDetailModalProps> = ({
                 onPress={handleShare}
                 style={styles.shareButton}
               >
-                <Icon name="share" size={24} color={colors.white} />
+                <ShareIcon size={20} color={colors.primary} />
               </TouchableOpacity>
             </View>
-          </LinearGradient>
+          </View>
 
           {/* Content */}
           <ScrollView
@@ -148,25 +141,31 @@ const GiftCardDetailModal: React.FC<GiftCardDetailModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
   },
   header: {
+    backgroundColor: colors.white,
     paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderLight,
     ...shadows.sm,
   },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    minHeight: 44,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.xl,
+    backgroundColor: colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   headerCenter: {
     flex: 1,
@@ -176,27 +175,28 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: typography.lg,
     fontWeight: '700',
-    color: colors.white,
+    color: colors.text,
     textAlign: 'center',
   },
   headerSubtitle: {
     fontSize: typography.sm,
-    color: colors.white,
-    opacity: 0.8,
+    color: colors.textSecondary,
     marginTop: 2,
     textAlign: 'center',
   },
   shareButton: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.xl,
+    backgroundColor: colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   content: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
   },
 });
 

@@ -1,5 +1,4 @@
-// src/components/modals/EditGiftCardModal.tsx
-
+// src/components/modals/EditGiftCardModal.tsx - Clean Header Design
 import React from 'react';
 import {
   Modal,
@@ -11,8 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import LinearGradient from 'react-native-linear-gradient';
+import { EditIcon, CloseIcon } from '../common/CustomIcons';
 import GiftCardForm from '../giftcard/GiftCardForm';
 import { GiftCard, GiftCardFormData } from '../../types';
 import {
@@ -43,7 +41,6 @@ const EditGiftCardModal: React.FC<EditGiftCardModalProps> = ({
 
   const getInitialData = (): Partial<GiftCardFormData> | undefined => {
     if (!card) return undefined;
-
     return {
       brand: card.brand,
       amount: card.amount.toString(),
@@ -61,29 +58,23 @@ const EditGiftCardModal: React.FC<EditGiftCardModalProps> = ({
       onRequestClose={onClose}
     >
       <SafeAreaView style={styles.container}>
-        {/* Header */}
-        <LinearGradient
-          colors={[colors.secondary, colors.primary]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.header}
-        >
+        {/* Clean Header Design */}
+        <View style={styles.header}>
           <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
               <View style={styles.iconContainer}>
-                <Icon name="edit" size={24} color={colors.white} />
+                <EditIcon size={24} color={colors.primary} />
               </View>
               <View style={styles.titleContainer}>
                 <Text style={styles.headerTitle}>Edit Gift Card</Text>
                 <Text style={styles.headerSubtitle}>{card.brand}</Text>
               </View>
             </View>
-
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Icon name="close" size={24} color={colors.white} />
+              <CloseIcon size={18} color={colors.text} />
             </TouchableOpacity>
           </View>
-        </LinearGradient>
+        </View>
 
         {/* Content */}
         <KeyboardAvoidingView
@@ -112,14 +103,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
+    backgroundColor: colors.surface,
     paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
     ...shadows.sm,
   },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    minHeight: 44,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -127,10 +122,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.xl,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.md,
@@ -141,19 +135,18 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: typography.xl,
     fontWeight: '700',
-    color: colors.white,
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: typography.sm,
-    color: colors.white,
-    opacity: 0.8,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.xl,
+    backgroundColor: colors.surfaceVariant,
     justifyContent: 'center',
     alignItems: 'center',
   },
