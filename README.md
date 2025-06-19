@@ -50,14 +50,11 @@ A React Native mobile application that allows users to store, view, and manage t
 
 ### 📹 Demo Video
 
-**App Walkthrough** _(51MB)_
+**App Walkthrough**
 
-<div align="center">
-  <video width="350" controls>
-    <source src="./assets/app-demo.mov" type="video/quicktime">
-    Your browser does not support the video tag.
-  </video>
-</div>
+[![Gift Card Wallet Demo](https://img.youtube.com/vi/1Vh6PmJCAIM/maxresdefault.jpg)](https://www.youtube.com/shorts/1Vh6PmJCAIM)
+
+**Direct Link:** [Watch on YouTube Shorts](https://www.youtube.com/shorts/1Vh6PmJCAIM)
 
 ### Project Structure
 
