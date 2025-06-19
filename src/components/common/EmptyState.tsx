@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import GradientButton from './GradientButton';
+import Button from './Button';
 import {
   colors,
   typography,
@@ -36,7 +36,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       <Text style={styles.subtitle}>{subtitle}</Text>
 
       {buttonText && onButtonPress && (
-        <GradientButton
+        <Button
           title={buttonText}
           onPress={onButtonPress}
           style={styles.button}

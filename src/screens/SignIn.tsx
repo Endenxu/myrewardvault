@@ -1,5 +1,4 @@
-// src/screens/SignIn.tsx
-
+// src/screens/SignIn.tsx - Improved Keyboard Avoiding
 import React from 'react';
 import {
   View,
@@ -7,6 +6,9 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -32,56 +34,72 @@ const SignInScreen: React.FC = () => {
 
   const handleSignIn = async (name: string) => {
     try {
-      // Save user name to storage
       await storageService.saveUserName(name);
-
-      // Navigate to main app with bottom tabs
       navigation.navigate('Main');
     } catch (error) {
       console.error('Error saving user name:', error);
-      // Still navigate even if saving fails
       navigation.navigate('Main');
     }
   };
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <LinearGradient
-        colors={[colors.background, colors.surface]}
-        style={styles.gradient}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardAvoid}
-        >
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View style={styles.container}>
-              <View style={styles.headerContainer}>
-                <WelcomeHeader
-                  title="Gift Card Wallet"
-                  subtitle="Organize and manage all your gift cards in one place"
-                />
-              </View>
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
 
-              <View style={styles.formContainer}>
-                <SignInForm onSignIn={handleSignIn} />
-              </View>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </LinearGradient>
-    </SafeAreaView>
+  return (
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+      <SafeAreaView style={styles.safeArea}>
+        <TouchableWithoutFeedback onPress={dismissKeyboard}>
+          <LinearGradient
+            colors={['#FAFBFF', '#F0F4FF', colors.surface]}
+            style={styles.gradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.keyboardAvoid}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+            >
+              <ScrollView
+                contentContainerStyle={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+              >
+                <View style={styles.container}>
+                  {/* Top spacer for better centering */}
+                  <View style={styles.topSpacer} />
+
+                  {/* Header Section */}
+                  <View style={styles.headerSection}>
+                    <WelcomeHeader
+                      title="Gift Card Wallet"
+                      subtitle="Organize and manage all your gift cards in one place"
+                    />
+                  </View>
+
+                  {/* Form Section */}
+                  <View style={styles.formSection}>
+                    <SignInForm onSignIn={handleSignIn} />
+                  </View>
+
+                  {/* Bottom spacer */}
+                  <View style={styles.bottomSpacer} />
+                </View>
+              </ScrollView>
+            </KeyboardAvoidingView>
+          </LinearGradient>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#FAFBFF',
   },
   gradient: {
     flex: 1,
@@ -91,23 +109,30 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
     minHeight: '100%',
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
   },
-  headerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    maxHeight: 300,
+  topSpacer: {
+    flex: 0.8,
+    minHeight: 40,
   },
-  formContainer: {
-    flex: 1,
+  headerSection: {
+    flex: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+  },
+  formSection: {
+    flex: 1.5,
     justifyContent: 'flex-start',
-    maxHeight: 300,
+    paddingTop: spacing.xl,
+  },
+  bottomSpacer: {
+    flex: 1,
+    minHeight: 60,
   },
 });
 

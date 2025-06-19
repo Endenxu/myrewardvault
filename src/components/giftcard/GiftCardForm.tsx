@@ -5,10 +5,10 @@ import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useGiftCards } from '../../hooks/useGiftCards';
 import Input from '../common/Input';
 import DatePickerInput from '../common/DatePickerInput';
-import GradientButton from '../common/GradientButton';
 import { GiftCardFormData, ValidationError } from '../../types';
 import { ValidationUtils } from '../../utils/validation';
 import { spacing } from '../../constants/theme';
+import Button from '../common/Button';
 
 interface GiftCardFormProps {
   onSuccess: () => void;
@@ -203,7 +203,7 @@ const GiftCardForm: React.FC<GiftCardFormProps> = ({
         />
 
         <View style={styles.buttonContainer}>
-          <GradientButton
+          <Button
             title={isEditing ? 'Update Card' : 'Add Card'}
             onPress={validateAndSubmit}
             loading={loading}
@@ -212,7 +212,7 @@ const GiftCardForm: React.FC<GiftCardFormProps> = ({
             style={styles.submitButton}
           />
 
-          <GradientButton
+          <Button
             title="Cancel"
             onPress={onCancel}
             variant="secondary"
